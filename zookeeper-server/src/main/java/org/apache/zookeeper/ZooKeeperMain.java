@@ -83,7 +83,7 @@ public class ZooKeeperMain {
         commandMap.put("printwatches", "on|off");
         commandMap.put("quit", "");
         Stream.of(CommandFactory.Command.values())
-            .map(command -> CommandFactory.getInstance(command))
+            .map(CommandFactory::getInstance)
             // add all commands to commandMapCli and commandMap
             .forEach(cliCommand ->{
                 cliCommand.addToMap(commandMapCli);
