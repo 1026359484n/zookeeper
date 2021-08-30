@@ -1022,10 +1022,12 @@ public class FastLeaderElection implements Election {
                             Long.toHexString(n.electionEpoch));
 
                         // don't care about the version if it's in LOOKING state
+                        // 8. 选票归档: 将收到的外部投票放进选票集合recvset中
                         recvset.put(n.sid, new Vote(n.leader, n.zxid, n.electionEpoch, n.peerEpoch));
 
                         voteSet = getVoteTracker(recvset, new Vote(proposedLeader, proposedZxid, logicalclock.get(), proposedEpoch));
 
+                        // 9. 判断当前节点收到的票数是否可以结束选票
                         if (voteSet.hasAllQuorums()) {
 
                             // Verify if there is any change in the proposed leader
@@ -1041,8 +1043,11 @@ public class FastLeaderElection implements Election {
                              * relevant message from the reception queue
                              */
                             if (n == null) {
+                                //设置服务状态
                                 setPeerState(proposedLeader, voteSet);
+                                //最终的选票
                                 Vote endVote = new Vote(proposedLeader, proposedZxid, logicalclock.get(), proposedEpoch);
+                                //清空recvqueue队列的选票
                                 leaveInstance(endVote);
                                 return endVote;
                             }
